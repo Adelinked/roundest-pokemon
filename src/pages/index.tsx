@@ -29,7 +29,7 @@ const Home: NextPage = () => {
         <div className="w-64 h-64 flex flex-col items-center justify-center">
           <img
             className="w-full"
-            src={firstPokemon.data?.sprites.front_default}
+            src={firstPokemon.data?.sprites.front_default as string | undefined}
           />
           <div className="text-xl capitalize mt-[-2rem]">
             {firstPokemon.data?.name}
@@ -46,7 +46,9 @@ const Home: NextPage = () => {
         <div className="w-64 h-64 flex flex-col items-center justify-center">
           <img
             className="w-full"
-            src={secondPokemon.data?.sprites.front_default}
+            src={
+              secondPokemon.data?.sprites.front_default as string | undefined
+            }
           />
           <div className="text-xl capitalize mt-[-2rem]">
             {secondPokemon.data?.name}
