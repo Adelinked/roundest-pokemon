@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { trpc } from "@/utils/trpc";
 import { getOptionsForVote } from "@/utils/getRandomPokemon";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const Home: NextPage = () => {
   const [ids, setIds] = useState(() => getOptionsForVote());
@@ -11,16 +11,23 @@ const Home: NextPage = () => {
   const firstPokemon = trpc.getPokemonById.useQuery({ id: first });
   const secondPokemon = trpc.getPokemonById.useQuery({ id: second });
 
+  const voteMutation = trpc.castVote.useMutation();
+  const voteForRoundest = (selected: number) => {
+    if (selected === first) {
+      voteMutation.mutate({ votedFor: first, VotedAgainst: second });
+    } else {
+      voteMutation.mutate({ votedFor: second, VotedAgainst: first });
+    }
+    setIds(getOptionsForVote());
+  };
+
   if (firstPokemon.isLoading || secondPokemon.isLoading)
     return (
       <div className="w-screen h-screen flex items-center justify-center text-2xl">
         ...Loading
       </div>
     );
-  const voteForRoundest = (selected: number) => {
-    //
-    setIds(getOptionsForVote());
-  };
+
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen ">
       <div className="text-2xl text-center">Which Pokemon is Rounder?</div>
@@ -68,3 +75,31 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+//type PokemonFromServer = inferQueryOutput<AppRouter[getPokemonById]>;
+/*
+const PokemonListing: React.FC<{
+  pokemon: PokemonFromServer;
+  vote: () => void;
+}> = (props) => {
+  return (
+    <div className="w-64 h-64 flex flex-col items-center justify-center">
+      <img
+        className="w-full"
+        src={
+          props.pokemon.getPokemonById?.sprites.front_default as
+            | string
+            | undefined
+        }
+      />
+      <div className="text-xl capitalize mt-[-2rem]">
+        {props.pokemon.getPokemonById?.name}
+      </div>
+      <div className="pt-2"></div>
+      <button className="border rounded p-2" onClick={() => props.vote()}>
+        Rounder
+      </button>
+    </div>
+  );
+};
+*/
